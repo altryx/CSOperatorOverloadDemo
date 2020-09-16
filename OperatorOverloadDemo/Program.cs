@@ -9,7 +9,7 @@ namespace OperatorOverloadDemo
             Vector myTestVector = new Vector(2, 3);
 
             // Get the pretty print version of the myTestVector
-            Console.WriteLine(myTestVector.ToString());
+            Console.WriteLine($"myTestVector: {myTestVector}");
 
             // Define two new vectors to demonstrate different vector operations
             Vector vector1 = new Vector(1, 1);
@@ -17,28 +17,35 @@ namespace OperatorOverloadDemo
 
             // Vector addition
             Vector vecAddition = vector1 + vector2;
-            Console.WriteLine($"{vector1} + {vector2} = {vecAddition}");
+            Console.WriteLine($"Vector addition: {vector1} + {vector2} = {vecAddition}");
 
             // What about ++ and -- operators?
-                // Console.WriteLine(vector1++);
-                // Console.WriteLine(vector1--);
+            // Console.WriteLine(vector1++);
+            // Console.WriteLine(vector1--);
             // Won't compile: operator '++' cannot be applied to operand of type 'Program.Vector'
             // This is because addition/subtraction of an integer to a vector is not defined in the struct 
             // (and has no mathematical interpretation either)
-           
 
             // Vector subtraction
             Vector vecSubtraction = vector1 - vector2;
-            Console.WriteLine($"{vector1} - {vector2} = {vecSubtraction}");
+            Console.WriteLine($"Vector subtraction: {vector1} - {vector2} = {vecSubtraction}");
 
             // Multiplication of a vector by a scalar (i.e. constant)
             Vector vecScalarMultiplication = vector1 * 3;
-            Console.WriteLine($"{vector1} * 3 = {vecScalarMultiplication}");
+            Console.WriteLine($"Vector scalar multiplication: {vector1} * 3 = {vecScalarMultiplication}");
 
             // Division of a vector by a scalar. Need to explicitly cast float as decimal here
-            Vector vecScalarDivision = vector1 / (decimal)3.5;
-            Console.WriteLine($"{vector1} / 3.5 = {vecScalarDivision}");
-            
+            Vector vecScalarDivision = vector1 / 3.5;
+            Console.WriteLine($"Vector scalar division: {vector1} / 3.5 = {vecScalarDivision}");
+
+            // Dot multiplication of two vectors
+            double vecDotMultiplication = Vector.DotM(vector1, vector2);
+            Console.WriteLine($"Vector dot multiplication: {vector1} ⋅ {vector2} = {vecDotMultiplication}");
+
+            // Magnitude of the vector
+            double vecMagnitude = Vector.Magnitude(vector1);
+            Console.WriteLine($"Vector magnitude: |{vector1}| = {vecMagnitude}");
+
 
 
         }
@@ -50,7 +57,7 @@ namespace OperatorOverloadDemo
 
 
 
-        private void SimpleExamples()
+        private void TypeExamples()
         {
             // Declare and assign variables containing primitive types
             int myInteger = 6;
@@ -68,9 +75,6 @@ namespace OperatorOverloadDemo
             // (double and int in this case)
             double myDouble = mySecondInteger + 2 * myInteger / 9;
 
-            // The above line is functionally equivalent to:
-            double anotherDouble = (double)(mySecondInteger + 2 * myInteger / 9);
-
             // It is also possible to manually cast a variable to specific type
 
 
@@ -85,10 +89,10 @@ namespace OperatorOverloadDemo
         public struct Vector
         {
             // By making these private, a vector can only be defined at time of creation.
-            private decimal X, Y;
+            private double X, Y;
 
             // Defining a vector through use of a constructor
-            public Vector(decimal x, decimal y)
+            public Vector(double x, double y)
             {
                 X = x;
                 Y = y;
@@ -106,11 +110,16 @@ namespace OperatorOverloadDemo
             public static Vector operator -(Vector vector1, Vector vector2) => vector1+ (-vector2);
 
             // Vector scalar multiplication
-            public static Vector operator *(Vector vector1, decimal scalar) => new Vector(vector1.X * scalar, vector1.Y * scalar);
+            public static Vector operator *(Vector vector1, double scalar) => new Vector(vector1.X * scalar, vector1.Y * scalar);
 
             // Vector scalar division
-            public static Vector operator /(Vector vector1, decimal scalar) => new Vector(vector1.X / scalar, vector1.Y / scalar);
-            
+            public static Vector operator /(Vector vector1, double scalar) => new Vector(vector1.X / scalar, vector1.Y / scalar);
+
+            // Vector dot product - returns a scalar (ref. https://www.mathsisfun.com/algebra/vectors-dot-product.html)
+            public static double DotM(Vector vector1, Vector vector2) => vector1.X * vector2.X + vector1.Y + vector2.Y;
+
+            // Vector magnitude
+            public static double Magnitude(Vector vector) => Math.Sqrt(Math.Pow(vector.X, 2) + Math.Pow(vector.Y, 2));
         }
     }
 }
