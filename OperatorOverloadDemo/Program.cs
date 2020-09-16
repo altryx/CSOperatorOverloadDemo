@@ -34,9 +34,13 @@ namespace OperatorOverloadDemo
             Vector vecScalarMultiplication = vector1 * 3;
             Console.WriteLine($"Vector scalar multiplication: {vector1} * 3 = {vecScalarMultiplication}");
 
-            // Division of a vector by a scalar. Need to explicitly cast float as decimal here
+            // Division of a vector by a scalar.
             Vector vecScalarDivision = vector1 / 3.5;
             Console.WriteLine($"Vector scalar division: {vector1} / 3.5 = {vecScalarDivision}");
+
+            // Combined operations
+            Vector vecCombined = vector1 + vector2 * 3;
+            Console.WriteLine($"Vector multiplication and addition: {vector1} + {vector2} * 3 = {vecCombined}");
 
             // Dot multiplication of two vectors
             double vecDotMultiplication = Vector.DotM(vector1, vector2);
@@ -50,13 +54,6 @@ namespace OperatorOverloadDemo
 
         }
 
-
-
-
-
-
-
-
         private void TypeExamples()
         {
             // Declare and assign variables containing primitive types
@@ -66,17 +63,19 @@ namespace OperatorOverloadDemo
             var implicitInteger = 6; 
 
             string myString = "Hello World!";
-            
+
             // Simple integer addition
-            int mySecondInteger = myInteger + 1;
+            int mySecondInteger = myInteger + 1; // Equals 7
 
             // Types can be automatically cast from one type to another,
             // if automatic typecasting is defined for the specific pairs
             // (double and int in this case)
             double myDouble = mySecondInteger + 2 * myInteger / 9;
+            // The above line will return myDouble = 8 due to integer division
 
-            // It is also possible to manually cast a variable to specific type
-
+            // If myInteger is cast into a double however...
+            myDouble = mySecondInteger + 2 * (double)myInteger / 9;
+            // The result this time is 8.333333333333334
 
             // Strings can be concatenated using the + operator
             string concatenatedString = "Hello" + "World" + "!";
@@ -84,42 +83,58 @@ namespace OperatorOverloadDemo
 
         }
 
-
-
         public struct Vector
         {
-            // By making these private, a vector can only be defined at time of creation.
+            // X and Y can only be defined at the time of creation.
             private double X, Y;
 
             // Defining a vector through use of a constructor
-            public Vector(double x, double y)
-            {
-                X = x;
-                Y = y;
-            }
+            public Vector(double x, double y) => (X, Y) = (x, y); //A tuple
 
             // Override generic ToString() definition with our own which returns 
             // a string in the form of "<X,Y>"
             public override string ToString() => $"<{X}, {Y}>";     
 
-            // Define + and - operators when a single argument of type Vector is provided
+            // Define + and - operators for a single argument of type Vector
             public static Vector operator +(Vector vector) => vector;
+            
+            // Sign change
             public static Vector operator -(Vector vector) => new Vector(-vector.X, -vector.Y);
 
-            public static Vector operator +(Vector vector1, Vector vector2) => new Vector(vector1.X + vector2.X, vector1.Y + vector2.Y);
-            public static Vector operator -(Vector vector1, Vector vector2) => vector1+ (-vector2);
+            // Vector addition
+            public static Vector operator +(Vector vector1, Vector vector2)
+            {
+                return new Vector(vector1.X + vector2.X, vector1.Y + vector2.Y);
+            }
+
+            // Vector subtraction (addition with sign change)
+            public static Vector operator -(Vector vector1, Vector vector2) => vector1 + (-vector2);
 
             // Vector scalar multiplication
-            public static Vector operator *(Vector vector1, double scalar) => new Vector(vector1.X * scalar, vector1.Y * scalar);
+            public static Vector operator *(Vector vector1, double scalar)
+            {
+                return new Vector(vector1.X * scalar, vector1.Y * scalar);
+            }
 
             // Vector scalar division
-            public static Vector operator /(Vector vector1, double scalar) => new Vector(vector1.X / scalar, vector1.Y / scalar);
+            public static Vector operator /(Vector vector1, double scalar)
+            {
+                return new Vector(vector1.X / scalar, vector1.Y / scalar);
+            }
 
-            // Vector dot product - returns a scalar (ref. https://www.mathsisfun.com/algebra/vectors-dot-product.html)
-            public static double DotM(Vector vector1, Vector vector2) => vector1.X * vector2.X + vector1.Y + vector2.Y;
+            // Vector dot product - returns a scalar 
+            // (ref. https://www.mathsisfun.com/algebra/vectors-dot-product.html)
+            public static double DotM(Vector vector1, Vector vector2)
+            {
+                return vector1.X * vector2.X + vector1.Y + vector2.Y;
+            }
 
-            // Vector magnitude
-            public static double Magnitude(Vector vector) => Math.Sqrt(Math.Pow(vector.X, 2) + Math.Pow(vector.Y, 2));
+            // Vector magnitude - returns a scalar 
+            // (ref: https://www.mathsisfun.com/algebra/vectors.html)
+            public static double Magnitude(Vector vector)
+            {
+                return Math.Sqrt(Math.Pow(vector.X, 2) + Math.Pow(vector.Y, 2));
+            }
         }
     }
 }
